@@ -23,6 +23,7 @@ export default defineConfig({
   // Tauri expects a fixed port, fail if that port is not available
   envPrefix: ['VITE_', 'TAURI_ENV_*'],
   build: {
+    outDir: 'artifacts/frontend',
     // Tauri uses Chromium on Windows and WebKit on macOS and Linux
     target: process.env.TAURI_ENV_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
     // don't minify for debug builds

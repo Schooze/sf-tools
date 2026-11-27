@@ -1,23 +1,23 @@
 import { SFBridge } from '../../lib/tauri-bridge';
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  Home, 
-  Sliders, 
-  Activity, 
-  Wrench, 
-  ShieldAlert, 
-  Cpu, 
-  Terminal, 
-  Settings, 
-  Cable, 
-  Power, 
-  RotateCcw, 
-  Save, 
-  Download, 
+import {
+  Search,
+  Home,
+  Sliders,
+  Activity,
+  Wrench,
+  ShieldAlert,
+  Cpu,
+  Terminal,
+  Settings,
+  Cable,
+  Power,
+  RotateCcw,
+  Save,
+  Download,
   Upload,
   AlertOctagon,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 import { useConnectionStore } from '../../stores/useConnectionStore';
@@ -48,7 +48,13 @@ export const CommandPalette: React.FC = () => {
   if (!isCommandPaletteOpen) return null;
 
   const actions = [
-    { id: 'nav_motion', title: 'Navigate to Motion Control', category: 'Navigation', icon: Activity, run: () => setCurrentView('motion') },
+    {
+      id: 'nav_motion',
+      title: 'Navigate to Motion Control',
+      category: 'Navigation',
+      icon: Activity,
+      run: () => setCurrentView('motion'),
+    },
     {
       id: 'nav_overview',
       title: 'Navigate to Overview',
@@ -148,27 +154,35 @@ export const CommandPalette: React.FC = () => {
       title: 'Emergency Stop (Disable Active Node)',
       category: 'Safety',
       icon: AlertOctagon,
-      run: async () => { try { await SFBridge.emergencyStop(); addToast('warning', 'E-STOP acknowledged', 'Motor disable and PVT stop acknowledged'); } catch (e) { addToast('error', 'E-STOP not confirmed', String(e)); } },
+      run: async () => {
+        try {
+          await SFBridge.emergencyStop();
+          addToast('warning', 'E-STOP acknowledged', 'Motor disable and PVT stop acknowledged');
+        } catch (e) {
+          addToast('error', 'E-STOP not confirmed', String(e));
+        }
+      },
     },
   ];
 
-  const filtered = actions.filter((a) =>
-    a.title.toLowerCase().includes(search.toLowerCase()) ||
-    a.category.toLowerCase().includes(search.toLowerCase())
+  const filtered = actions.filter(
+    (a) =>
+      a.title.toLowerCase().includes(search.toLowerCase()) ||
+      a.category.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const handleSelect = (action: typeof actions[0]) => {
+  const handleSelect = (action: (typeof actions)[0]) => {
     action.run();
     setCommandPaletteOpen(false);
     setSearch('');
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-24 px-4 select-none"
       onClick={() => setCommandPaletteOpen(false)}
     >
-      <div 
+      <div
         className="w-full max-w-xl bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100"
         onClick={(e) => e.stopPropagation()}
       >
@@ -207,11 +221,15 @@ export const CommandPalette: React.FC = () => {
                   onClick={() => handleSelect(action)}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors ${
-                    isHighlighted ? 'bg-surface-hover text-white' : 'text-sf-muted hover:text-sf-text'
+                    isHighlighted
+                      ? 'bg-surface-hover text-white'
+                      : 'text-sf-muted hover:text-sf-text'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={`p-1.5 rounded-lg ${isHighlighted ? 'bg-blue-600/20 text-blue-400' : 'bg-surface text-sf-subtle'}`}>
+                    <div
+                      className={`p-1.5 rounded-lg ${isHighlighted ? 'bg-blue-600/20 text-blue-400' : 'bg-surface text-sf-subtle'}`}
+                    >
                       <Icon size={14} />
                     </div>
                     <div>

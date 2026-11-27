@@ -1,17 +1,22 @@
 {
   "name": "sf-tools",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "test": "node --test scripts/test-frontend.mjs scripts/test-views.mjs",
-    "test:rust": "cargo test --offline --lib --no-default-features --manifest-path src-tauri/Cargo.toml",
+    "test": "node --test tests/frontend/config-model.test.mjs tests/frontend/views.test.mjs",
+    "test:rust": "cargo test --locked --offline --lib --no-default-features --manifest-path src-tauri/Cargo.toml",
     "build:windows": "node scripts/build-windows.mjs",
-    "prepare:runtime": "node scripts/prepare-runtime.mjs"
+    "prepare:runtime": "node scripts/prepare-runtime.mjs",
+    "test:portable": "node scripts/test-portable.mjs",
+    "format": "prettier --write . && cargo fmt --manifest-path src-tauri/Cargo.toml && rustfmt --edition 2021 packaging/windows/launcher.rs",
+    "format:check": "prettier --check . && cargo fmt --manifest-path src-tauri/Cargo.toml -- --check && rustfmt --edition 2021 --check packaging/windows/launcher.rs",
+    "check": "npm run format:check && npm test && npm run build && npm run test:rust",
+    "test:desktop": "node tests/desktop/smoke.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.2.0",
@@ -31,8 +36,21 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5.2",
+    "prettier": "3.10.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "vite": "^6.1.0"
-  }
+    "vite": "^6.4.6"
+  },
+  "description": "Desktop configuration, motion control, commissioning, and telemetry for SF-Motion controllers",
+  "author": "SF Robotics",
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "sf-motion",
+    "motor-control",
+    "foc",
+    "tauri",
+    "telemetry"
+  ]
 }

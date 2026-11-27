@@ -1,3 +1,4 @@
+import { APP_VERSION } from '../../lib/app-version';
 import React, { useState, useRef, useEffect } from 'react';
 import { SFBridge } from '../../lib/tauri-bridge';
 import { invoke } from '@tauri-apps/api/core';
@@ -53,14 +54,8 @@ export const Titlebar: React.FC = () => {
     addToast,
   } = useAppStore();
 
-  const {
-    isConnected,
-    deviceInfo,
-    selectedPort,
-    connect,
-    disconnect,
-    fetchPorts,
-  } = useConnectionStore();
+  const { isConnected, deviceInfo, selectedPort, connect, disconnect, fetchPorts } =
+    useConnectionStore();
 
   const {
     dirtyKeys,
@@ -182,7 +177,6 @@ export const Titlebar: React.FC = () => {
   const handleExportTelemetryCsv = () => {
     exportCSV();
     setActiveMenu(null);
-
   };
 
   const handleRevertChanges = () => {
@@ -218,8 +212,12 @@ export const Titlebar: React.FC = () => {
 
   const handleEmergencyStop = async () => {
     setActiveMenu(null);
-    try { await SFBridge.emergencyStop(); addToast('warning', 'E-STOP acknowledged', 'Motor disable and PVT stop acknowledged'); }
-    catch (e) { addToast('error', 'E-STOP not confirmed', String(e)); }
+    try {
+      await SFBridge.emergencyStop();
+      addToast('warning', 'E-STOP acknowledged', 'Motor disable and PVT stop acknowledged');
+    } catch (e) {
+      addToast('error', 'E-STOP not confirmed', String(e));
+    }
   };
 
   const handleScanPorts = async () => {
@@ -239,8 +237,12 @@ export const Titlebar: React.FC = () => {
 
   const handleReboot = async () => {
     setActiveMenu(null);
-    try { const response = await SFBridge.executeTerminal('reboot'); addToast('warning', 'Reset sent', response); }
-    catch (e) { addToast('error', 'Reset failed', String(e)); }
+    try {
+      const response = await SFBridge.executeTerminal('reboot');
+      addToast('warning', 'Reset sent', response);
+    } catch (e) {
+      addToast('error', 'Reset failed', String(e));
+    }
   };
 
   const menus = ['File', 'Edit', 'View', 'Tools', 'Help'];
@@ -251,7 +253,9 @@ export const Titlebar: React.FC = () => {
         data-tauri-drag-region
         onMouseDown={handleTitlebarMouseDown}
         onDoubleClick={(e) => {
-          if (!(e.target as HTMLElement).closest('button, input, select, textarea, a, [data-no-drag]')) {
+          if (
+            !(e.target as HTMLElement).closest('button, input, select, textarea, a, [data-no-drag]')
+          ) {
             handleMaximize();
           }
         }}
@@ -268,10 +272,15 @@ export const Titlebar: React.FC = () => {
 
         {/* Left: App Logo, Title, Menu items */}
         <div className="flex items-center space-x-3 flex-shrink-0" data-tauri-drag-region>
-          <div className="flex items-center space-x-2 text-sf-text font-medium" data-tauri-drag-region>
+          <div
+            className="flex items-center space-x-2 text-sf-text font-medium"
+            data-tauri-drag-region
+          >
             <SfLogo size={20} />
             <span className="tracking-tight text-white font-semibold">SF-Tools</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface text-sf-subtle font-mono">v0.1</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface text-sf-subtle font-mono">
+              v{APP_VERSION}
+            </span>
           </div>
 
           {/* Interactive Codex-style menus */}
@@ -339,7 +348,9 @@ export const Titlebar: React.FC = () => {
                               <Download size={14} className="text-emerald-400" />
                               <span>Export Telemetry CSV</span>
                             </span>
-                            <span className="text-[10px] font-mono text-sf-subtle">Ctrl+Shift+E</span>
+                            <span className="text-[10px] font-mono text-sf-subtle">
+                              Ctrl+Shift+E
+                            </span>
                           </button>
                         </div>
                         <div className="p-1 space-y-0.5">
@@ -540,7 +551,9 @@ export const Titlebar: React.FC = () => {
                           >
                             <span className="flex items-center space-x-2">
                               <PanelLeft size={14} className="text-sf-muted" />
-                              <span>{isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}</span>
+                              <span>
+                                {isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+                              </span>
                             </span>
                             <span className="text-[10px] font-mono text-sf-subtle">Ctrl+B</span>
                           </button>
@@ -603,10 +616,15 @@ export const Titlebar: React.FC = () => {
                             className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-blue-600/20 hover:text-white text-sf-text transition-colors"
                           >
                             <span className="flex items-center space-x-2">
-                              <Power size={14} className={isConnected ? 'text-rose-400' : 'text-emerald-400'} />
+                              <Power
+                                size={14}
+                                className={isConnected ? 'text-rose-400' : 'text-emerald-400'}
+                              />
                               <span>{isConnected ? 'Disconnect Device' : 'Connect Device'}</span>
                             </span>
-                            <span className="text-[10px] font-mono text-sf-subtle">Ctrl+Shift+C</span>
+                            <span className="text-[10px] font-mono text-sf-subtle">
+                              Ctrl+Shift+C
+                            </span>
                           </button>
                           <button
                             onClick={handleReboot}

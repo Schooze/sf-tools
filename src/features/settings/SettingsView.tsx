@@ -1,3 +1,29 @@
+import { APP_VERSION } from '../../lib/app-version';
 import React from 'react';
-import {Page,Card} from '../../components/common/DeviceUI';
-export const SettingsView:React.FC=()=> <Page title="Settings & Application" description="SF-Tools desktop runtime and display information."><Card title="Appearance"><p className="text-sf-muted">Dark desktop theme. Canvas plot rendering targets 60 FPS; UI telemetry snapshots are sampled approximately every 16 ms.</p></Card><Card title="Connection"><p className="text-sf-muted">Choose USB serial port, baudrate and node in the sidebar. Device access and the explicit simulator require the desktop application.</p></Card><Card title="About SF-Tools"><div className="space-y-2 text-sf-muted"><p>Application: 0.2.0 · Tauri 2 · Rust · React 18</p><p>Firmware: SF-Motion 0.3.0 · register protocol 0xA5A5</p><p>One active node · up to 10 streaming channels · no USB flashing endpoint</p></div></Card></Page>;
+import { Page, Card } from '../../components/common/DeviceUI';
+export const SettingsView: React.FC = () => (
+  <Page
+    title="Settings & Application"
+    description="SF-Tools desktop runtime and display information."
+  >
+    <Card title="Appearance">
+      <p className="text-sf-muted">
+        Dark desktop theme. Canvas plot rendering targets 60 FPS; UI telemetry snapshots are sampled
+        approximately every 16 ms.
+      </p>
+    </Card>
+    <Card title="Connection">
+      <p className="text-sf-muted">
+        Choose USB serial port, baudrate and node in the sidebar. Device access and the explicit
+        simulator require the desktop application.
+      </p>
+    </Card>
+    <Card title="About SF-Tools">
+      <div className="space-y-2 text-sf-muted">
+        <p>Application: {APP_VERSION} · Tauri 2 · Rust · React 18</p>
+        <p>Firmware: SF-Motion 0.3.0 · register protocol 0xA5A5</p>
+        <p>One active node · up to 10 streaming channels · no USB flashing endpoint</p>
+      </div>
+    </Card>
+  </Page>
+);

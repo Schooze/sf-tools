@@ -1,3 +1,4 @@
+import { APP_VERSION } from '../../lib/app-version';
 import React from 'react';
 import { X, Heart } from 'lucide-react';
 import { SfLogo } from '../common/SfLogo';
@@ -35,7 +36,9 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
           <div className="p-3.5 rounded-lg bg-surface border border-border space-y-2">
             <div className="flex justify-between items-center text-sf-subtle">
               <span>Application Version:</span>
-              <span className="font-mono text-white bg-surface-raised px-2 py-0.5 rounded border border-border">v0.2.0</span>
+              <span className="font-mono text-white bg-surface-raised px-2 py-0.5 rounded border border-border">
+                v{APP_VERSION}
+              </span>
             </div>
             <div className="flex justify-between items-center text-sf-subtle">
               <span>Framework Engine:</span>
@@ -53,7 +56,9 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
 
           <div className="space-y-1.5 text-sf-muted text-[11px] leading-relaxed">
             <p>
-              SF-Tools is a high-performance desktop suite designed for field-oriented control (FOC) motor configuration, 60 FPS live oscilloscope plotting, self-commissioning parameter estimation, and real-time hardware diagnostics.
+              SF-Tools is a high-performance desktop suite designed for field-oriented control (FOC)
+              motor configuration, 60 FPS live oscilloscope plotting, self-commissioning parameter
+              estimation, and real-time hardware diagnostics.
             </p>
           </div>
 

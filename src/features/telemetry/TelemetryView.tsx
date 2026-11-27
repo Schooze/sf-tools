@@ -1,17 +1,17 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { 
-  Play, 
-  Pause, 
-  Trash2, 
-  Download, 
-  Circle, 
-  Activity, 
+import {
+  Play,
+  Pause,
+  Trash2,
+  Download,
+  Circle,
+  Activity,
   ZoomIn,
   ZoomOut,
   RotateCcw,
   ArrowRight,
   Sliders,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { useTelemetryStore, AVAILABLE_SIGNALS } from '../../stores/useTelemetryStore';
 import { useConnectionStore } from '../../stores/useConnectionStore';
@@ -22,21 +22,21 @@ export const TelemetryView: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const { 
-    isStreaming, 
-    isPaused, 
-    setPaused, 
-    clearHistory, 
-    startStreaming, 
-    history, 
-    latestSample, 
-    activeSignalIds, 
+  const {
+    isStreaming,
+    isPaused,
+    setPaused,
+    clearHistory,
+    startStreaming,
+    history,
+    latestSample,
+    activeSignalIds,
     toggleSignal,
     fps,
     isRecording,
     startRecording,
     stopRecording,
-    exportCSV
+    exportCSV,
   } = useTelemetryStore();
   const { isConnected, busy } = useConnectionStore();
 
@@ -44,7 +44,7 @@ export const TelemetryView: React.FC = () => {
 
   // Pan & Zoom states
   // pointsVisible: how many samples fit across the canvas width
-  const [pointsVisible, setPointsVisible] = useState(400); 
+  const [pointsVisible, setPointsVisible] = useState(400);
   // panOffset: 0 means snapped to the newest sample. > 0 means scrolled back in time.
   const [panOffset, setPanOffset] = useState(0);
   const [isLive, setIsLive] = useState(true);
@@ -83,7 +83,7 @@ export const TelemetryView: React.FC = () => {
       // Moving mouse right (positive deltaX) scrolls back in time (increases panOffset)
       const maxOffset = Math.max(0, history.length - pointsVisible);
       const newOffset = Math.max(0, Math.min(maxOffset, dragStartOffsetRef.current + deltaSamples));
-      
+
       setPanOffset(newOffset);
       if (newOffset === 0) {
         setIsLive(true);
@@ -244,7 +244,10 @@ export const TelemetryView: React.FC = () => {
             let drawing = false;
             for (let i = 0; i < visibleSlice.length; i++) {
               const val = freshValue(visibleSlice[i], sig.id, visibleSlice[i].timestamp_ms);
-              if (val === undefined) { drawing = false; continue; }
+              if (val === undefined) {
+                drawing = false;
+                continue;
+              }
               const x = i * stepX;
               const normY = (val - minY) / (maxY - minY);
               const y = height - normY * height;
@@ -270,7 +273,7 @@ export const TelemetryView: React.FC = () => {
             // Find closest sample to hover position
             const sampleIdx = Math.min(
               visibleSlice.length - 1,
-              Math.max(0, Math.round(hoverPos.x / stepX))
+              Math.max(0, Math.round(hoverPos.x / stepX)),
             );
             const sample = visibleSlice[sampleIdx];
             if (sample) {
@@ -287,9 +290,16 @@ export const TelemetryView: React.FC = () => {
         ctx.fillText(minY.toFixed(1), 8, height - 8);
 
         // Time span label at bottom right
-        const timeSec = ((visibleSlice[visibleSlice.length - 1].timestamp_ms - visibleSlice[0].timestamp_ms) / 1000).toFixed(1);
+        const timeSec = (
+          (visibleSlice[visibleSlice.length - 1].timestamp_ms - visibleSlice[0].timestamp_ms) /
+          1000
+        ).toFixed(1);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.fillText(`Window: ${visibleSlice.length} samples (~${timeSec}s)`, width - 170, height - 8);
+        ctx.fillText(
+          `Window: ${visibleSlice.length} samples (~${timeSec}s)`,
+          width - 170,
+          height - 8,
+        );
       }
 
       ctx.restore();
@@ -301,7 +311,10 @@ export const TelemetryView: React.FC = () => {
   }, [history, activeSignalIds, autoscale, pointsVisible, panOffset, isLive, hoverPos]);
 
   return (
-    <div ref={containerRef} className="h-full flex flex-col justify-between overflow-hidden select-none bg-background">
+    <div
+      ref={containerRef}
+      className="h-full flex flex-col justify-between overflow-hidden select-none bg-background"
+    >
       {/* Top Toolbar */}
       <div className="p-3 border-b border-border bg-sidebar/60 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-3">
@@ -314,7 +327,11 @@ export const TelemetryView: React.FC = () => {
           </div>
 
           {/* Live / Paused / Panned Indicator */}
-          {isLive && isConnected && !isPaused && latestSample && Date.now() - latestSample.timestamp_ms < 1000 ? (
+          {isLive &&
+          isConnected &&
+          !isPaused &&
+          latestSample &&
+          Date.now() - latestSample.timestamp_ms < 1000 ? (
             <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>LIVE</span>
@@ -325,7 +342,15 @@ export const TelemetryView: React.FC = () => {
               title="Click to snap back to live incoming data"
               className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-mono font-medium transition-colors shadow-sm animate-pulse-subtle"
             >
-              <span>{isPaused ? "PAUSED" : !isConnected ? "DISCONNECTED" : isLive ? "WAITING / STALE" : "SNAP TO LIVE"}</span>
+              <span>
+                {isPaused
+                  ? 'PAUSED'
+                  : !isConnected
+                    ? 'DISCONNECTED'
+                    : isLive
+                      ? 'WAITING / STALE'
+                      : 'SNAP TO LIVE'}
+              </span>
               <ArrowRight size={10} />
             </button>
           )}
@@ -349,9 +374,7 @@ export const TelemetryView: React.FC = () => {
             >
               <ZoomIn size={13} />
             </button>
-            <span className="px-1.5 text-[10px] font-mono text-sf-subtle">
-              {pointsVisible} pts
-            </span>
+            <span className="px-1.5 text-[10px] font-mono text-sf-subtle">{pointsVisible} pts</span>
             <button
               onClick={handleZoomOut}
               className="p-1 rounded hover:bg-surface-hover text-sf-muted hover:text-white transition-colors"
@@ -371,8 +394,8 @@ export const TelemetryView: React.FC = () => {
           <button
             onClick={() => setPaused(!isPaused)}
             className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium flex items-center space-x-1.5 transition-colors ${
-              isPaused 
-                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' 
+              isPaused
+                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
                 : 'bg-surface hover:bg-surface-hover border-border text-sf-text'
             }`}
           >
@@ -395,7 +418,9 @@ export const TelemetryView: React.FC = () => {
           <button
             onClick={() => setAutoscale(!autoscale)}
             className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
-              autoscale ? 'bg-blue-600/20 border-blue-500 text-blue-300' : 'bg-surface border-border text-sf-subtle'
+              autoscale
+                ? 'bg-blue-600/20 border-blue-500 text-blue-300'
+                : 'bg-surface border-border text-sf-subtle'
             }`}
           >
             Autoscale
@@ -422,8 +447,8 @@ export const TelemetryView: React.FC = () => {
 
       {/* Main Canvas Waveform View with Draggable Pan & Cursor */}
       <div className="flex-1 relative bg-background overflow-hidden">
-        <canvas 
-          ref={canvasRef} 
+        <canvas
+          ref={canvasRef}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -453,10 +478,14 @@ export const TelemetryView: React.FC = () => {
         {/* Live / Hover numerical inspection badges */}
         <div className="absolute top-3 right-3 flex flex-col space-y-1.5 pointer-events-none">
           {AVAILABLE_SIGNALS.filter((s) => activeSignalIds.includes(s.id)).map((sig) => {
-            const displayVal = freshValue(hoverSample ?? latestSample, sig.id, hoverSample?.timestamp_ms ?? Date.now());
+            const displayVal = freshValue(
+              hoverSample ?? latestSample,
+              sig.id,
+              hoverSample?.timestamp_ms ?? Date.now(),
+            );
             return (
-              <div 
-                key={sig.id} 
+              <div
+                key={sig.id}
                 className="px-2.5 py-1 rounded-lg bg-surface/85 backdrop-blur-md border border-border flex items-center justify-between space-x-3 text-xs shadow-lg"
               >
                 <div className="flex items-center space-x-1.5">
@@ -464,7 +493,8 @@ export const TelemetryView: React.FC = () => {
                   <span className="text-sf-muted font-medium text-[11px]">{sig.name}</span>
                 </div>
                 <div className="font-mono font-semibold text-white text-xs">
-                  {displayVal === undefined ? '—' : displayVal.toFixed(2)} <span className="text-[10px] text-sf-subtle font-normal">{sig.unit}</span>
+                  {displayVal === undefined ? '—' : displayVal.toFixed(2)}{' '}
+                  <span className="text-[10px] text-sf-subtle font-normal">{sig.unit}</span>
                 </div>
               </div>
             );
@@ -474,7 +504,7 @@ export const TelemetryView: React.FC = () => {
         {/* Mini-map Scrubber along bottom of canvas */}
         {history.length > pointsVisible && (
           <div className="absolute bottom-1 left-4 right-4 h-1.5 bg-surface/80 rounded-full overflow-hidden border border-border/40 pointer-events-none">
-            <div 
+            <div
               style={{
                 width: `${Math.max(5, (pointsVisible / history.length) * 100)}%`,
                 left: `${Math.min(95, ((history.length - panOffset - pointsVisible) / history.length) * 100)}%`,
@@ -509,9 +539,9 @@ export const TelemetryView: React.FC = () => {
                     : 'bg-background/40 border-border/60 text-sf-subtle hover:text-sf-muted'
                 }`}
               >
-                <span 
-                  className={`w-2 h-2 rounded-full ${isActive ? '' : 'opacity-40'}`} 
-                  style={{ backgroundColor: sig.color }} 
+                <span
+                  className={`w-2 h-2 rounded-full ${isActive ? '' : 'opacity-40'}`}
+                  style={{ backgroundColor: sig.color }}
                 />
                 <span>{sig.name}</span>
                 <span className="text-[10px] font-mono text-sf-subtle">({sig.unit})</span>

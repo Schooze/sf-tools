@@ -1,0 +1,11 @@
+node_modules/
+artifacts/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/icons/
+assets/branding/
+shared/firmware/
+docs/archive/
+package-lock.json
+Cargo.lock
+src-tauri/Cargo.lock

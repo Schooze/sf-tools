@@ -21,23 +21,31 @@ import { SettingsView } from '../features/settings/SettingsView';
 
 export const App: React.FC = () => {
   const { currentView } = useAppStore();
-  const isConnected = useConnectionStore(s => s.isConnected);
+  const isConnected = useConnectionStore((s) => s.isConnected);
   const lastEvent = useRef(0);
   useEffect(installExternalLinks, []);
   useEffect(() => {
-    if (!isConnected) { lastEvent.current = 0; return; }
+    if (!isConnected) {
+      lastEvent.current = 0;
+      return;
+    }
     let alive = true;
     const poll = async () => {
       await useDeviceStore.getState().refresh();
       if (!alive) return;
       const node = useConnectionStore.getState().nodeId;
       for (const e of useDeviceStore.getState().diagnostics?.events ?? []) {
-        if (e.sequence > lastEvent.current && e.node_id === node && e.code >= 2) useAppStore.getState().addToast('error', 'Device protection event', e.name);
+        if (e.sequence > lastEvent.current && e.node_id === node && e.code >= 2)
+          useAppStore.getState().addToast('error', 'Device protection event', e.name);
         lastEvent.current = Math.max(lastEvent.current, e.sequence);
       }
     };
-    void poll(); const timer = setInterval(() => void poll(), 500);
-    return () => { alive = false; clearInterval(timer); };
+    void poll();
+    const timer = setInterval(() => void poll(), 500);
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
   }, [isConnected]);
 
   const renderActiveView = () => {
@@ -77,9 +85,7 @@ export const App: React.FC = () => {
 
         {/* Center Workspace Content Area */}
         <main className="flex-1 flex flex-col overflow-hidden relative bg-background">
-          <div className="flex-1 overflow-hidden relative">
-            {renderActiveView()}
-          </div>
+          <div className="flex-1 overflow-hidden relative">{renderActiveView()}</div>
 
           {/* Floating Bottom Action Dock */}
           <BottomDock />

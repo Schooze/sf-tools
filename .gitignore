@@ -1,20 +1,30 @@
-# Dependencies and intermediate frontend output
+# Dependencies
 /node_modules/
-/dist/
-/.cache/
 
-# Rust output, generated Tauri schemas and prepared dependency runtime
+# Build output, installers, reports, caches, and local archives
+/artifacts/
+/dist/
+/release/
+/.cache/
+/test/
+/coverage/
 /src-tauri/target/
 /src-tauri/gen/
 /src-tauri/WebView2Loader.dll
 
-# Installed application used for earlier manual testing
-/test/
-
-# Local environment overrides
+# Local configuration and credentials
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+!.env.template
+*.local
 *.log
+*.pem
+*.key
 
-# Release binaries, checksums and validation reports are versioned in /release/.
+# Editors and operating systems
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

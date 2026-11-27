@@ -1,103 +1,66 @@
-# SF-Tools 0.2.0
+# SF-Tools
 
-Aplikasi desktop Windows untuk SF-Motion **0.3.0**, berdasarkan [firmware commit 2e58c941](https://github.com/sirojudinMunir/sf-motion/commit/2e58c941620b2fbd82c751d390fcecee27f16ece) (21 November 2026). Protokol firmware lama tidak didukung.
+Desktop configuration, commissioning, motion control, and telemetry for **SF-Motion** motor controllers.
 
-## Menjalankan
+**Application:** 0.2.1 · **Firmware:** 0.3.0 · **Platform:** Windows x64
 
-- Installer: [release/SF-Tools-Setup.exe](release/SF-Tools-Setup.exe).
-- Portable: jalankan [release/sf-tools.exe](release/sf-tools.exe) dengan **WebView2Loader.dll tetap berada di direktori yang sama**.
-- Windows memerlukan Microsoft Edge WebView2 Runtime. Installer menggunakan pemeriksaan/bootstrapper WebView2 standar Tauri.
-- Pilih port USB serial, baudrate (default 115200), dan node (default 0). Simulator harus dipilih secara eksplisit melalui port SIMULATOR.
-- Koneksi COM benar-benar membuka port; kegagalan perangkat tidak diganti dengan data simulator.
-- Preview web hanya untuk tampilan. Akses perangkat dan simulator tersedia dalam aplikasi desktop.
+![SF-Tools Motion Control](docs/assets/motion-control.png)
 
-## Kesesuaian fitur
+SF-Tools connects to an SF-Motion controller over USB serial, including node selection through the firmware USB-to-CAN bridge. An explicit simulator provides the same register protocol for exploring the application without hardware.
 
-| Fitur firmware | Dukungan SF-Tools |
-|---|---|
-| Versi firmware, ID node | Handshake versi dan pencocokan node respons |
-| Register read/write | Katalog bersama, pemeriksaan tipe, ACK dan baca ulang |
-| Parameter motor dan PID | Editor berkelompok, Apply, Revert, profil |
-| FOC sensored / SMO+HFI / SMO+HFI New / Hybrid | Pemilihan mode sesuai enum |
-| Motor Disable / Torque / Speed / Position / Impedance / Voltage | Motion Control dan terminal |
-| Motor enable/disable | Tindakan eksplisit; E-STOP diprioritaskan |
-| Impedance dan current feedforward | Parameter dan referensi posisi/kecepatan/arus |
-| Field weakening, MTPA | Konfigurasi lengkap yang diekspos register |
-| Sensor arus/tegangan dan encoder PLL | Konfigurasi sesuai register dan catatan penerapan |
-| Trajectory S-curve | Target posisi, batas kecepatan, percepatan, jerk |
-| PVT | Editor/CSV, append, run, stop, pelaporan upload parsial |
-| Rs, Ld, Lq, encoder, pole pairs | Commissioning berbasis event selesai |
-| Cogging / anti-cogging | Pengukuran, akuisisi LUT 1024 sampel, CSV, enable kompensasi |
-| Proteksi I²t / under-voltage / over-voltage | Parameter dan riwayat event yang diterima |
-| Streaming | Maksimal 10 kanal per node, plotter, perekaman CSV |
-| Save / default / reset | Operasi firmware nyata; reset dilaporkan sebagai terkirim |
-| Update firmware | Informasi versi dan panduan ST-Link/PlatformIO |
-| Audio, flashing USB, clear-fault, suhu | Tidak ditampilkan sebagai fitur perangkat yang tersedia |
+- Configure motor, FOC, PID, encoder, impedance, trajectory, and protection parameters.
+- Apply changes with readback verification, save to flash, and manage configuration profiles.
+- Control torque, speed, position, impedance, and voltage with explicit motor enable.
+- Create S-curve moves and PVT profiles; import and export motion points as CSV.
+- Commission resistance, inductance, encoder, pole pairs, and cogging compensation.
+- Plot telemetry, export CSV, and inspect device events and actual transport packets.
 
-Satu node aktif pada satu waktu. Pemilihan node mendukung USB langsung atau bridge USB-to-CAN firmware. Adaptor CAN pihak ketiga dan gerakan banyak motor serentak tidak termasuk.
+## Install and run
 
-## Alur konfigurasi dan kontrol
+Use the **Windows installer** from this repository's GitHub Releases when available. It installs SF-Tools and checks for Microsoft Edge WebView2 Runtime, downloading the runtime if needed. Internet access is required for that download.
 
-1. Connect dan baca konfigurasi aktual. Nilai offline ditandai sebagai default firmware.
-2. Edit parameter atau impor profil. **Apply to device** hanya menulis perubahan dan memeriksa baca ulang sesuai representasi float32/u8/u32. Parameter yang gagal tetap ditandai berubah.
-3. **Save to flash** menyimpan konfigurasi secara terpisah. Parameter staged tetap perlu restart.
-4. Buka Motion Control, pilih mode, lalu **Enable selected mode**. Pengaktifan menetralkan mode sebelumnya sebelum memilih mode baru; tidak dilakukan otomatis saat Connect.
-5. Untuk commissioning, tekan **Enable output for commissioning** terlebih dahulu. Pengukuran ditolak bila enable belum diakui dalam sesi aktif. Kirim setpoint sesuai mode aktif. Posisi menggunakan derajat, kecepatan RPM, sudut elektrik radian.
-6. **E-STOP** membatalkan generasi perintah lama, mendahulukan disable register 102, kemudian menghentikan PVT melalui 104. Pesan hasil mengikuti ACK perangkat.
-7. Restore defaults menonaktifkan keluaran dan PVT terlebih dahulu, menggunakan perintah firmware, lalu berpindah ke node default 0. Save ke flash tetap terpisah.
+The **portable EXE** can be copied directly to the Desktop or another folder. It packages its loader internally; no `WebView2Loader.dll` or companion folder is needed beside the EXE. WebView2 Runtime must already be installed when using the portable version.
 
-Profil baru menggunakan format 2 dengan nama register firmware. Impor format 1 memetakan nama parameter dan mode lama secara eksplisit; parameter yang tidak tersedia (misalnya max_rpm) dilewati dan dilaporkan. Profil tidak langsung diterapkan ke perangkat.
+Select your COM port and node (default **0**), or choose **SIMULATOR** explicitly. A connection error never silently switches to the simulator. One node is active at a time.
 
-## Batasan firmware yang perlu diketahui
+See [Getting started](docs/getting-started.md) for the configuration and motor-control workflow.
 
-- Header USB adalah A5 A5, diikuti panjang payload, tipe, node, register, dan data little-endian. **Tidak ada CRC/checksum**. Respons write berisi status int8: 0 berhasil, nilai negatif gagal.
-- Katalog [shared/registers.json](shared/registers.json) digunakan Rust, frontend, simulator, dan referensi protokol. Sumber upstream disimpan dengan commit dan lisensi di shared/firmware. Register 1 (versi, tiga byte) dan 103 (PVT float32 + int16) dilengkapi dari handler C karena belum tercantum di JSON upstream.
-- Nomor mode: 0 Disable, 1 Torque, 2 Speed, 3 Position, 4 Impedance, 5 Audio, 6 Voltage. Audio belum memiliki jalur kontrol aktif sehingga tidak dapat dipilih.
-- Register PWM 21 hanya menyimpan setting. Frekuensi efektif build firmware ini tetap **40 kHz**, walaupun default register tersimpan 20 kHz.
-- ID node dan setting encoder tertentu memerlukan save/restart. ID yang dibaca dari register 2 dapat merupakan ID staged; node pada header respons adalah identitas routing aktif.
-- Setter arah fase 90 mengubah storage, tetapi Save menimpanya dari arah fase aktif. Editor menampilkan nilai ini read-only; gunakan commissioning pole pairs untuk menentukan arah aktif.
-- Firmware tidak mengekspos hardware revision, serial unik, suhu, query fault aktif, atau clear-fault. Riwayat event bukan bukti bahwa semua fault saat ini sudah diketahui.
-- move_done didefinisikan dalam katalog event, tetapi tidak dikirim secara andal oleh jalur trajectory/PVT ini. UI tidak mengklaim gerakan selesai hanya berdasarkan ACK atau timer host.
-- PVT berkapasitas 256 titik, interval 1 ms, posisi float32 dalam derajat dan kecepatan int16 dalam derajat/detik. Upload **menambah** isi buffer; Stop tidak menghapusnya. Tidak ada query occupancy/status atau clear-buffer; restart mengosongkan buffer volatile. ACK Run tidak membuktikan ada titik yang dimainkan.
-- Commissioning menunggu event setelah operasi dimulai. Event dapat hilang; timeout berarti penyelesaian belum terkonfirmasi. Tidak ada register abort commissioning: E-STOP menonaktifkan keluaran dan menghentikan penantian host, tetapi rutinitas internal firmware dapat tetap aktif.
-- Kanal 92 merupakan keluaran LUT cogging berhingga, bukan kanal telemetry kontinu. Akuisisi khusus menyimpan 1024 sampel dan memulihkan langganan normal. Firmware mengirim LUT otomatis hanya pada USB langsung; melalui bridge USB-to-CAN, pengukuran dapat selesai tetapi akuisisi LUT akan dilaporkan tidak lengkap bila sampel tidak dikirim.
-- Parser memisahkan respons, event, dan streaming. Timeout respons menutup sesi untuk menghindari pemakaian respons lama sebagai respons permintaan berikutnya; reconnect harus eksplisit.
-- Statistik dan packet inspector berasal dari transport nyata. CSV menyertakan node dan membiarkan nilai kosong untuk data yang tidak tersedia/kedaluwarsa. Snapshot UI sekitar 60 Hz, bukan rekaman lossless seluruh frame firmware.
-- Simulator memakai katalog, frame, batas kanal, mode, ACK, event commissioning, serta buffer PVT yang sama; model dinamika adalah pendekatan dan tidak membuktikan performa atau keselamatan perangkat fisik.
+## Compatibility
 
-## Pengembangan dan pengujian
+This release targets [SF-Motion 0.3.0, commit 2e58c941](https://github.com/sirojudinMunir/sf-motion/commit/2e58c941620b2fbd82c751d390fcecee27f16ece). Older firmware protocols are not supported.
 
-Prasyarat: Node/npm, Rust toolchain Windows, WebView2 Runtime, serta linker Windows yang sesuai.
+The [firmware feature matrix and limitations](docs/firmware-compatibility.md) document the exact supported behavior, including staged settings, PVT buffer semantics, and commissioning events. Firmware Manager provides version information and ST-Link/PlatformIO guidance.
 
-~~~powershell
-npm install
-npm test
-npm run test:rust
-npm run build
+## Develop
+
+Prerequisites: Node.js 22+, npm, Rust with rustfmt, a Windows toolchain, and WebView2 Runtime. The Windows packaging pipeline currently uses the GNU target and MinGW.
+
+```powershell
+npm ci
+cargo fetch --locked --manifest-path src-tauri/Cargo.toml
+npm run check
 npm run prepare:runtime
 npm run tauri dev
-~~~
+```
 
-Tes inti Rust dijalankan tanpa fitur desktop agar tidak bergantung pada DLL/activation context Common Controls dari executable GUI. Build aplikasi tetap memakai fitur desktop default. Tes frontend mencakup model konfigurasi/profil/PVT/telemetry dan render statis semua halaman dengan snapshot state; tes ini bukan otomatisasi mouse/keyboard.
+Build the Windows installer and portable EXE:
 
-~~~powershell
+```powershell
 npm run build:windows
-~~~
+```
 
-Script mengambil loader x64 dari versi webview2-com-sys di Cargo.lock, menjalankan Tauri/NSIS, dan menyalin EXE, loader, installer serta SHA256SUMS.txt ke release/. Tool installer dicache di src-tauri/target/.tauri/; unduhan awal NSIS/plugin dan komponen WebView2 memerlukan internet. Kompilasi Cargo menggunakan dependensi cache secara offline.
+Outputs are generated in `artifacts/windows/` and excluded from Git. Publish release binaries through GitHub Releases.
 
-Pemeriksaan executable produksi tanpa perangkat fisik:
+## Documentation
 
-~~~powershell
-$p = Start-Process -FilePath .\release\sf-tools.exe -ArgumentList @('--self-test','D:/Projects/sf-tools/sf-tools/release/validation.json') -WindowStyle Hidden -PassThru -Wait
-$p.ExitCode
-Get-Content .\release\validation.json
-~~~
+- [Getting started](docs/getting-started.md)
+- [Development and repository layout](docs/development.md)
+- [Architecture](docs/architecture.md)
+- [Firmware compatibility](docs/firmware-compatibility.md)
+- [Release process and validation](docs/releasing.md)
+- [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
 
-Self-test membuka simulator melalui worker/protokol yang sama, menguji handshake, disabled start, konfigurasi, streaming, commissioning, PVT, serta E-STOP. Kode keluar 0 dan laporan ok:true menandakan lulus. Self-test tidak membuka port COM atau menggerakkan motor fisik.
+## License
 
-## Status verifikasi
-
-- Laporan executable terbaru: release/validation.json.
-- Pengujian perangkat fisik harus dilakukan terpisah dengan board yang sesuai.
-- Pemeriksaan UI interaktif dalam sesi pembaruan ini dihentikan pengguna melalui Escape; hasil tersebut tidak dinyatakan sebagai smoke test UI yang lulus.
+An application license has not yet been selected. No application license is added by this release. The vendored SF-Motion reference files retain their [upstream MIT license](shared/firmware/LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md).

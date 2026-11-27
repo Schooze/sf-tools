@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { 
-  Home, 
-  Sliders, 
-  Activity, 
-  Wrench, 
-  ShieldAlert, 
-  Cpu, 
-  Terminal as TermIcon, 
+import {
+  Home,
+  Sliders,
+  Activity,
+  Wrench,
+  ShieldAlert,
+  Cpu,
+  Terminal as TermIcon,
   Settings as SettingsIcon,
   Cable,
   Power,
@@ -21,24 +21,19 @@ import { AppView } from '../../types';
 import { SfLogo } from '../common/SfLogo';
 
 export const Sidebar: React.FC = () => {
-  const { 
-    currentView, 
-    setCurrentView, 
-    sidebarWidth, 
-    setSidebarWidth, 
-    isSidebarCollapsed 
-  } = useAppStore();
+  const { currentView, setCurrentView, sidebarWidth, setSidebarWidth, isSidebarCollapsed } =
+    useAppStore();
 
-  const { 
-    isConnected, 
-    isConnecting, 
-    selectedPort, 
-    setSelectedPort, 
-    availablePorts, 
-    fetchPorts, 
-    connect, 
-    disconnect, 
-    deviceInfo 
+  const {
+    isConnected,
+    isConnecting,
+    selectedPort,
+    setSelectedPort,
+    availablePorts,
+    fetchPorts,
+    connect,
+    disconnect,
+    deviceInfo,
   } = useConnectionStore();
   const { dirtyKeys } = useConfigStore();
 
@@ -63,7 +58,7 @@ export const Sidebar: React.FC = () => {
         setSidebarWidth(mouseMoveEvent.clientX);
       }
     },
-    [isDragging, setSidebarWidth]
+    [isDragging, setSidebarWidth],
   );
 
   useEffect(() => {
@@ -88,7 +83,12 @@ export const Sidebar: React.FC = () => {
 
   const navItems: { id: AppView; label: string; icon: LucideIcon; badge?: string | number }[] = [
     { id: 'overview', label: 'Overview', icon: Home },
-    { id: 'configuration', label: 'Motor Configuration', icon: Sliders, badge: dirtyKeys.size > 0 ? `${dirtyKeys.size}` : undefined },
+    {
+      id: 'configuration',
+      label: 'Motor Configuration',
+      icon: Sliders,
+      badge: dirtyKeys.size > 0 ? `${dirtyKeys.size}` : undefined,
+    },
     { id: 'motion', label: 'Motion Control', icon: Activity },
     { id: 'telemetry', label: 'Realtime Telemetry', icon: Activity },
     { id: 'commissioning', label: 'Self Commissioning', icon: Wrench },
@@ -103,7 +103,7 @@ export const Sidebar: React.FC = () => {
   }
 
   return (
-    <aside 
+    <aside
       style={{ width: `${sidebarWidth}px` }}
       className="relative bg-sidebar border-r border-border flex flex-col justify-between flex-shrink-0 select-none text-xs font-sans h-full transition-[width] duration-0"
     >
@@ -119,7 +119,7 @@ export const Sidebar: React.FC = () => {
                 <div className="text-[11px] text-sf-subtle">FOC Controller Studio</div>
               </div>
             </div>
-            <button 
+            <button
               onClick={fetchPorts}
               title="Refresh Ports"
               className="p-1 rounded hover:bg-surface text-sf-subtle hover:text-white transition-colors"
@@ -168,13 +168,19 @@ export const Sidebar: React.FC = () => {
           {/* Connection Status Label */}
           <div className="flex items-center justify-between text-[11px]">
             <div className="flex items-center space-x-1.5">
-              <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse-subtle' : 'bg-zinc-600'}`} />
+              <span
+                className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse-subtle' : 'bg-zinc-600'}`}
+              />
               <span className="text-sf-text font-medium truncate">
                 {isConnected ? 'Device Connected' : 'Disconnected'}
               </span>
             </div>
             <span className="text-[10px] text-sf-subtle font-mono flex-shrink-0">
-              {isConnected ? (deviceInfo?.firmware_version ? `FW v${deviceInfo.firmware_version}` : 'Online') : 'Offline'}
+              {isConnected
+                ? deviceInfo?.firmware_version
+                  ? `FW v${deviceInfo.firmware_version}`
+                  : 'Online'
+                : 'Offline'}
             </span>
           </div>
 
@@ -228,7 +234,9 @@ export const Sidebar: React.FC = () => {
       >
         <div
           className={`w-[2px] h-full transition-colors ${
-            isDragging ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]' : 'bg-transparent group-hover:bg-blue-400/80'
+            isDragging
+              ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]'
+              : 'bg-transparent group-hover:bg-blue-400/80'
           }`}
         />
       </div>
@@ -237,12 +245,57 @@ export const Sidebar: React.FC = () => {
 };
 
 const NodeSelector: React.FC = () => {
-  const { nodeId, setNodeId, busy, isConnecting, baudrate, setBaudrate, isConnected } = useConnectionStore();
+  const { nodeId, setNodeId, busy, isConnecting, baudrate, setBaudrate, isConnected } =
+    useConnectionStore();
   const [draft, setDraft] = useState(String(nodeId));
   useEffect(() => setDraft(String(nodeId)), [nodeId]);
-  return <div className="space-y-2">
-    <label className="flex items-center justify-between gap-2 text-sf-muted"><span>Node (0–255)</span><input aria-label="Active node" type="number" min={0} max={255} step={1} value={draft} disabled={busy || isConnecting} onChange={e => setDraft(e.target.value)} className="w-20 bg-background border border-border rounded px-2 py-1 text-white" /></label>
-    <button disabled={busy || isConnecting || draft === '' || !Number.isInteger(Number(draft)) || Number(draft) < 0 || Number(draft) > 255 || Number(draft) === nodeId} onClick={() => void setNodeId(Number(draft))} className="w-full py-1 text-blue-300 disabled:opacity-40">Select node</button>
-    <label className="flex items-center justify-between gap-2 text-sf-muted"><span>Baudrate</span><select aria-label="Baudrate" value={baudrate} disabled={isConnected || isConnecting} onChange={e => setBaudrate(Number(e.target.value))} className="bg-background border border-border rounded px-1 py-1 text-white">{[9600,19200,38400,57600,115200,230400,460800,921600].map(b => <option key={b} value={b}>{b}</option>)}</select></label>
-  </div>;
+  return (
+    <div className="space-y-2">
+      <label className="flex items-center justify-between gap-2 text-sf-muted">
+        <span>Node (0–255)</span>
+        <input
+          aria-label="Active node"
+          type="number"
+          min={0}
+          max={255}
+          step={1}
+          value={draft}
+          disabled={busy || isConnecting}
+          onChange={(e) => setDraft(e.target.value)}
+          className="w-20 bg-background border border-border rounded px-2 py-1 text-white"
+        />
+      </label>
+      <button
+        disabled={
+          busy ||
+          isConnecting ||
+          draft === '' ||
+          !Number.isInteger(Number(draft)) ||
+          Number(draft) < 0 ||
+          Number(draft) > 255 ||
+          Number(draft) === nodeId
+        }
+        onClick={() => void setNodeId(Number(draft))}
+        className="w-full py-1 text-blue-300 disabled:opacity-40"
+      >
+        Select node
+      </button>
+      <label className="flex items-center justify-between gap-2 text-sf-muted">
+        <span>Baudrate</span>
+        <select
+          aria-label="Baudrate"
+          value={baudrate}
+          disabled={isConnected || isConnecting}
+          onChange={(e) => setBaudrate(Number(e.target.value))}
+          className="bg-background border border-border rounded px-1 py-1 text-white"
+        >
+          {[9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600].map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+  );
 };

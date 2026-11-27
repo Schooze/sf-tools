@@ -1,0 +1,23 @@
+name: Bug report
+description: Report a reproducible problem in SF-Tools.
+title: '[Bug] '
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include SF-Tools, Windows, and firmware versions; transport; selected node; and physical hardware or simulator.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or screenshots
+      description: Include relevant events or packets. Remove private information.
