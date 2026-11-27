@@ -1,0 +1,19 @@
+{
+  "application_version": "0.2.0",
+  "checks": [
+    "handshake",
+    "disabled_start",
+    "configuration",
+    "telemetry",
+    "explicit_enable",
+    "commissioning",
+    "PVT",
+    "E-STOP"
+  ],
+  "commissioning_events": 5,
+  "firmware_version": "0.3.0",
+  "ok": true,
+  "packets_rx": 1598,
+  "packets_tx": 147,
+  "registers": 101
+}

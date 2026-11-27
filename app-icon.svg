@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1d22"/>
+      <stop offset="50%" stop-color="#121316"/>
+      <stop offset="100%" stop-color="#090a0c"/>
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.18)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.04)"/>
+    </linearGradient>
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,212,0,0.12)"/>
+      <stop offset="70%" stop-color="rgba(59,130,246,0.04)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+  </defs>
+
+  <!-- App Icon Background Squircle -->
+  <rect width="512" height="512" rx="116" fill="url(#bgGrad)"/>
+  <rect width="504" height="504" x="4" y="4" rx="112" fill="none" stroke="url(#borderGrad)" stroke-width="4"/>
+
+  <!-- Ambient Yellow / Electric Glow behind rotor -->
+  <circle cx="256" cy="256" r="180" fill="url(#ambientGlow)"/>
+
+  <!-- Embedded Authentic SF-Motion Stator Emblem -->
+  <g transform="translate(256, 256) scale(0.44) translate(-750, -750)">
+    <!-- Outer Rotor Stator Ring -->
+    <circle cx="750" cy="750" r="383.5" fill="#14151a" stroke="#2e313d" stroke-width="12"/>
+
+    <!-- 4 Stator Poles / Coils -->
+    <!-- Top Pole -->
+    <path fill="#f8fafc" d="M 735.703125 737.339844 L 623.632812 477.886719 C 623.632812 451.714844 680.207031 430.5 749.996094 430.5 C 819.78125 430.5 876.359375 451.714844 876.359375 477.886719 L 764.289062 737.339844 C 758.597656 749.433594 741.394531 749.433594 735.703125 737.339844 Z"/>
+    <!-- Right Pole -->
+    <path fill="#f8fafc" d="M 762.648438 735.703125 L 1022.101562 623.632812 C 1048.273438 623.632812 1069.488281 680.207031 1069.488281 749.996094 C 1069.488281 819.785156 1048.273438 876.359375 1022.101562 876.359375 L 762.648438 764.289062 C 750.558594 758.597656 750.558594 741.394531 762.648438 735.703125 Z"/>
+    <!-- Bottom Pole -->
+    <path fill="#f8fafc" d="M 764.289062 762.652344 L 876.359375 1022.101562 C 876.359375 1048.273438 819.78125 1069.488281 749.996094 1069.488281 C 680.207031 1069.488281 623.632812 1048.273438 623.632812 1022.101562 L 735.703125 762.652344 C 741.394531 750.558594 758.597656 750.558594 764.285156 762.652344 Z"/>
+    <!-- Left Pole -->
+    <path fill="#f8fafc" d="M 737.339844 764.289062 L 477.886719 876.359375 C 451.714844 876.359375 430.5 819.785156 430.5 749.996094 C 430.5 680.207031 451.714844 623.632812 477.886719 623.632812 L 737.339844 735.703125 C 749.433594 741.394531 749.433594 758.597656 737.339844 764.289062 Z"/>
+
+    <!-- Inner Core Circle -->
+    <circle cx="750" cy="750" r="139.15" fill="#090a0f" stroke="#222634" stroke-width="8"/>
+
+    <!-- Center Lightning S-Bolt -->
+    <path fill="#ffd400" d="M 773.921875 704.722656 L 841.589844 532.949219 L 859.324219 487.925781 L 830.207031 526.59375 L 645.820312 771.441406 L 637.851562 782.015625 L 651.105469 781.960938 L 731.402344 781.617188 L 660.996094 963.980469 L 642.390625 1012.179688 L 672.492188 970.167969 L 855.105469 715.289062 L 862.527344 704.925781 L 849.765625 704.894531 L 773.921875 704.722656 Z"/>
+  </g>
+</svg>
